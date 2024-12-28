@@ -11,9 +11,6 @@ from solution_map import create_map
 from image import encode_image, take_screenshot
 from ai import call_location_api
 
-# Load the .env file
-load_dotenv()
-
 def main_loop():
     imgs = []
     while True:

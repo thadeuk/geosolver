@@ -2,6 +2,10 @@ from openai import OpenAI
 
 from image import encode_image, encode_bytes
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 client = OpenAI()
 
 def call_location_api(imgs):
