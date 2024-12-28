@@ -1,19 +1,21 @@
+import os
+from dotenv import load_dotenv
+
 import speech_recognition as sr
 import pyttsx3
 import pyautogui
 import requests
 import io
 
-# If you plan to do text-to-speech back to the user
+# Load the .env file
+load_dotenv()
+
+# Retrieve the variables
+API_ENDPOINT = os.getenv("API_ENDPOINT")
+API_KEY = os.getenv("API_KEY")
+
 engine = pyttsx3.init()
-
-# Configure your recognition
 r = sr.Recognizer()
-
-# Replace with your actual endpoint and key
-# This is a placeholder. If you have GPT-4 Vision access, you’d put that endpoint here.
-API_ENDPOINT = "https://api.openai.com/v1/images:analyze"  
-API_KEY = "YOUR_API_KEY"
 
 def speak(text):
     """Helper function for text-to-speech."""
@@ -34,7 +36,6 @@ def listen_for_command():
             print("Sorry, I did not catch that.")
         except sr.RequestError:
             print("API was unavailable or unresponsive.")
-
     return ""
 
 def take_screenshot():
@@ -56,7 +57,7 @@ def call_location_api(image_bytes):
         "Content-Type": "application/octet-stream",
     }
     response = requests.post(API_ENDPOINT, headers=headers, data=image_bytes)
-    
+
     if response.status_code == 200:
         return response.json()
     else:
@@ -72,21 +73,20 @@ def main_loop():
             speak("Taking screenshot now.")
             img_bytes = take_screenshot()
             speak(f"Saved screenshot in memory.")
-
             # Send to location identification service
             result = call_location_api(img_bytes)
-            
+
             if result:
-                # Hypothetically, the API returns something like {"location": "New York, USA"}
                 location_info = result.get("location", "Location unknown")
                 speak(f"This looks like {location_info}.")
                 print(f"API response: {result}")
             else:
                 speak("Sorry, I could not identify the location.")
-        
+
         if "exit" in command or "quit" in command:
             speak("Goodbye!")
             break
 
 if __name__ == "__main__":
     main_loop()
+
