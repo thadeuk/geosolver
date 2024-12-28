@@ -1,8 +1,6 @@
 import os
 from dotenv import load_dotenv
 
-import speech_recognition as sr
-import pyttsx3
 import pyautogui
 import requests
 import io
@@ -11,11 +9,10 @@ from openai import OpenAI
 import webbrowser
 import folium
 
+from voice import speak, listen_for_command
+
 # Load the .env file
 load_dotenv()
-
-engine = pyttsx3.init()
-r = sr.Recognizer()
 
 client = OpenAI()
 
@@ -37,26 +34,6 @@ def create_map(lat, lon, zoom=10):
     print(f"Interactive map saved to {filepath}")
     webbrowser.open_new_tab(filepath)
 
-def speak(text):
-    """Helper function for text-to-speech."""
-    engine.say(text)
-    engine.runAndWait()
-
-def listen_for_command():
-    """Listen for a voice command. Return the transcribed text."""
-    with sr.Microphone() as source:
-        print("Listening for command...")
-        audio_data = r.listen(source)
-        try:
-            text = r.recognize_google(audio_data)
-            text = text.lower()
-            print(f"You said: {text}")
-            return text
-        except sr.UnknownValueError:
-            print("Sorry, I did not catch that.")
-        except sr.RequestError:
-            print("API was unavailable or unresponsive.")
-    return ""
 
 def take_screenshot():
     """Capture the screenshot and return bytes."""
@@ -98,7 +75,10 @@ def call_location_api(imgs):
 def main_loop():
     imgs = []
     while True:
-        command = listen_for_command()
+        (res, command) = listen_for_command()
+
+        if res != 0:
+            continue
 
         if "take photo" in command:
             speak("Taking screenshot now.")
@@ -139,4 +119,3 @@ def main_loop():
 
 if __name__ == "__main__":
     main_loop()
-
