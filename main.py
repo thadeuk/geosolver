@@ -46,7 +46,7 @@ def take_screenshot():
     img_bytes.seek(0)
     return img_bytes
 
-def call_location_api(image_bytes):
+def call_location_api(imgs):
     """
     Send the screenshot to an endpoint that can identify the location.
     If using GPT-4 with vision: the code would differ since that’s not
@@ -56,7 +56,7 @@ def call_location_api(image_bytes):
         "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/octet-stream",
     }
-    response = requests.post(API_ENDPOINT, headers=headers, data=image_bytes)
+    response = requests.post(API_ENDPOINT, headers=headers, data=imgs)
 
     if response.status_code == 200:
         return response.json()
@@ -66,15 +66,24 @@ def call_location_api(image_bytes):
 
 def main_loop():
     speak("Go go go go go go.")
+    imgs = []
     while True:
         command = listen_for_command()
 
         if "take photo" in command:
             speak("Taking screenshot now.")
             img_bytes = take_screenshot()
+            imgs.append(img_bytes)
             speak(f"Saved screenshot in memory.")
+
+        elif "solve location" in command:
+            if not imgs:
+                speak("No screenshots to analyze.")
+                continue
+
+            speak(f"Sending {len(imgs)} images to ChatGPT.")
             # Send to location identification service
-            result = call_location_api(img_bytes)
+            result = call_location_api(imgs)
 
             if result:
                 location_info = result.get("location", "Location unknown")
@@ -83,6 +92,10 @@ def main_loop():
             else:
                 speak("Sorry, I could not identify the location.")
 
+            imgs = []
+        else:
+            speak("I didn't understand that command.")
+        
         if "exit" in command or "quit" in command:
             speak("Goodbye!")
             break
