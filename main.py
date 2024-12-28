@@ -49,12 +49,6 @@ def main_loop():
             else:
                 speak("No location found in the image.")
             imgs = []
-        elif "open map" in command:
-            speak("Opening the map.")
-            # TODO
-            filepath = "solution_map.html"
-            create_map(filepath, 0, 0)
-            webbrowser.open_new_tab(filepath)
         else:
             speak("I didn't understand that command.")
         
