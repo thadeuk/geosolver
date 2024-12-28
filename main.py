@@ -33,14 +33,7 @@ def main_loop():
             speak(f"Sending {len(imgs)} images to ChatGPT.")
             # Send to location identification service
             result = call_location_api(imgs)
-
-            if result:
-                location_info = result.get("location", "Location unknown")
-                speak(f"This looks like {location_info}.")
-                print(f"API response: {result}")
-            else:
-                speak("Sorry, I could not identify the location.")
-
+            print(result)
             imgs = []
         elif "open map" in command:
             speak("Opening the map.")
