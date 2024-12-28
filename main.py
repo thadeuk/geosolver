@@ -8,13 +8,11 @@ import requests
 import io
 import base64
 from openai import OpenAI
+import webbrowser
+import folium
 
 # Load the .env file
 load_dotenv()
-
-# Retrieve the variables
-API_ENDPOINT = os.getenv("API_ENDPOINT")
-API_KEY = os.getenv("API_KEY")
 
 engine = pyttsx3.init()
 r = sr.Recognizer()
@@ -24,6 +22,20 @@ client = OpenAI()
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
+
+def create_map(lat, lon, zoom=10):
+    # Center the map at the given coords
+    my_map = folium.Map(location=[lat, lon], zoom_start=zoom)
+
+    # Drop a pin
+    folium.Marker(location=[lat, lon], popup="Guessed Location").add_to(my_map)
+
+    filepath = "location_map.html"
+
+    # Save to an HTML file
+    my_map.save(filepath)
+    print(f"Interactive map saved to {filepath}")
+    webbrowser.open_new_tab(filepath)
 
 def speak(text):
     """Helper function for text-to-speech."""
@@ -86,8 +98,7 @@ def call_location_api(imgs):
 def main_loop():
     imgs = []
     while True:
-        # command = listen_for_command()
-        command = "solve location"
+        command = listen_for_command()
 
         if "take photo" in command:
             speak("Taking screenshot now.")
@@ -115,7 +126,10 @@ def main_loop():
                 speak("Sorry, I could not identify the location.")
 
             imgs = []
-            break
+        elif "open map" in command:
+            speak("Opening the map.")
+            # TODO
+            create_map(0, 0)
         else:
             speak("I didn't understand that command.")
         
