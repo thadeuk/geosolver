@@ -9,6 +9,7 @@ import webbrowser
 from voice import speak, listen_for_command
 from solution_map import create_map
 from image import encode_image, take_screenshot
+from ai import call_location_api
 
 # Load the .env file
 load_dotenv()
@@ -26,11 +27,8 @@ def main_loop():
             img_bytes = take_screenshot()
             imgs.append(img_bytes)
             speak(f"Saved screenshot in memory.")
-            break
 
         elif "solve location" in command:
-            call_location_api([])
-            break
             if not imgs:
                 speak("No screenshots to analyze.")
                 continue
