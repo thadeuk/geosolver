@@ -13,4 +13,3 @@ def take_screenshot():
     screenshot.save(img_bytes, format='PNG')
     img_bytes.seek(0)
     return img_bytes
-
