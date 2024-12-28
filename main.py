@@ -6,6 +6,8 @@ import pyttsx3
 import pyautogui
 import requests
 import io
+import base64
+from openai import OpenAI
 
 # Load the .env file
 load_dotenv()
@@ -16,6 +18,12 @@ API_KEY = os.getenv("API_KEY")
 
 engine = pyttsx3.init()
 r = sr.Recognizer()
+
+client = OpenAI()
+
+def encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
 
 def speak(text):
     """Helper function for text-to-speech."""
@@ -47,36 +55,50 @@ def take_screenshot():
     return img_bytes
 
 def call_location_api(imgs):
-    """
-    Send the screenshot to an endpoint that can identify the location.
-    If using GPT-4 with vision: the code would differ since that’s not
-    publicly documented. For now, we’ll show a placeholder approach.
-    """
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/octet-stream",
-    }
-    response = requests.post(API_ENDPOINT, headers=headers, data=imgs)
+    # Getting the base64 string
+    base64_image1 = encode_image("photo1.png")
+    base64_image2 = encode_image("photo2.png")
 
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Error: {response.text}")
-        return None
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "What is in this image?",
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/png;base64,{base64_image1}"},
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/png;base64,{base64_image2}"},
+                    },
+                ],
+            }
+        ],
+    )
+    print(response.choices[0])
 
 def main_loop():
-    speak("Go go go go go go.")
     imgs = []
     while True:
-        command = listen_for_command()
+        # command = listen_for_command()
+        command = "solve location"
 
         if "take photo" in command:
             speak("Taking screenshot now.")
             img_bytes = take_screenshot()
             imgs.append(img_bytes)
             speak(f"Saved screenshot in memory.")
+            break
 
         elif "solve location" in command:
+            call_location_api([])
+            break
             if not imgs:
                 speak("No screenshots to analyze.")
                 continue
@@ -93,6 +115,7 @@ def main_loop():
                 speak("Sorry, I could not identify the location.")
 
             imgs = []
+            break
         else:
             speak("I didn't understand that command.")
         
