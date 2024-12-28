@@ -1,6 +1,8 @@
 # system imports
 import os
 from dotenv import load_dotenv
+import re
+import json
 
 # 3rd party imports
 import webbrowser
@@ -34,6 +36,18 @@ def main_loop():
             # Send to location identification service
             result = call_location_api(imgs)
             print(result)
+            if result:
+                location_str, lat, lon = parse_location_data(extract_json_from_markdown(result))
+                if location_str:
+                    speak(f"Most probable location is {location_str}.")
+                if lat and lon:
+                    speak("Opening the map.")
+                    filepath = "solution_map.html"
+                    create_map(filepath, lat, lon)
+                    webbrowser.open_new_tab(filepath)
+
+            else:
+                speak("No location found in the image.")
             imgs = []
         elif "open map" in command:
             speak("Opening the map.")
@@ -47,6 +61,52 @@ def main_loop():
         if "exit" in command or "quit" in command:
             speak("Goodbye!")
             break
+
+def extract_json_from_markdown(markdown_str):
+    """
+    Extracts JSON string from a Markdown code block.
+
+    Args:
+        markdown_str (str): String containing Markdown code block with JSON.
+
+    Returns:
+        str: Cleaned JSON string without Markdown delimiters.
+    """
+    # Use regex to extract content between ```json and ```
+    json_pattern = re.compile(r"```json\s*(\{.*?\})\s*```", re.DOTALL | re.IGNORECASE)
+    match = json_pattern.search(markdown_str)
+    if match:
+        return match.group(1)
+    else:
+        # If no code block found, assume the entire string is JSON
+        return markdown_str.strip()
+
+def parse_location_data(json_str):
+    """
+    Parses the JSON string to extract location and coordinates.
+
+    Args:
+        json_str (str): JSON-formatted string containing location data.
+
+    Returns:
+        tuple: (location (str), latitude (float), longitude (float))
+    """
+    try:
+        # Parse the JSON string into a Python dictionary
+        data = json.loads(json_str)
+
+        # Extract the location
+        location = data.get('location')
+
+        # Extract coordinates
+        coordinates = data.get('coordinates', {})
+        latitude = coordinates.get('lat')
+        longitude = coordinates.get('lon')
+
+        return location, latitude, longitude
+    except json.JSONDecodeError as e:
+        print(f"Error parsing JSON: {e}")
+        return None, None, None
 
 if __name__ == "__main__":
     main_loop()

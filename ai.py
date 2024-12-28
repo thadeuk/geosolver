@@ -14,7 +14,7 @@ def call_location_api(imgs):
         img_objs.append({"type": "image_url", "image_url": {"url": f"data:image/png;base64,{img}"}})
 
     content = []
-    content.append({"type": "text", "text": "I'm sending you pictures about a location, please respond first with the most probably locations and then give the explanation. Also, include the coordinate points"})
+    content.append({"type": "text", "text": "I'm sending you pictures of a location. Tell me where this location is with a JSON object, with the fields 'location' - succinct answer with country and city or region, and 'coordinates', with subfields 'lat' and 'lon' that are just numbers."})
     content.extend(img_objs)
 
     print("Sending to ChatGPT...")
@@ -27,4 +27,6 @@ def call_location_api(imgs):
             }
         ],
     )
-    return response.choices[0]
+    if response.choices[0]:
+        return response.choices[0].message.content
+    return None
