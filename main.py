@@ -68,7 +68,7 @@ def main_loop():
     while True:
         command = listen_for_command()
 
-        if "take a screenshot" in command:
+        if "take photo" in command:
             speak("Taking screenshot now.")
             img_bytes = take_screenshot()
             
