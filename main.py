@@ -7,9 +7,9 @@ import io
 import base64
 from openai import OpenAI
 import webbrowser
-import folium
 
 from voice import speak, listen_for_command
+from solution_map import create_map
 
 # Load the .env file
 load_dotenv()
@@ -19,21 +19,6 @@ client = OpenAI()
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
-
-def create_map(lat, lon, zoom=10):
-    # Center the map at the given coords
-    my_map = folium.Map(location=[lat, lon], zoom_start=zoom)
-
-    # Drop a pin
-    folium.Marker(location=[lat, lon], popup="Guessed Location").add_to(my_map)
-
-    filepath = "location_map.html"
-
-    # Save to an HTML file
-    my_map.save(filepath)
-    print(f"Interactive map saved to {filepath}")
-    webbrowser.open_new_tab(filepath)
-
 
 def take_screenshot():
     """Capture the screenshot and return bytes."""
@@ -109,7 +94,9 @@ def main_loop():
         elif "open map" in command:
             speak("Opening the map.")
             # TODO
-            create_map(0, 0)
+            filepath = "solution_map.html"
+            create_map(filepath, 0, 0)
+            webbrowser.open_new_tab(filepath)
         else:
             speak("I didn't understand that command.")
         
