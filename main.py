@@ -8,7 +8,7 @@ import webbrowser
 # local imports
 from voice import speak, listen_for_command
 from solution_map import create_map
-from image import encode_image, take_screenshot
+from image import encode_image, take_screenshot, encode_bytes
 from ai import call_location_api
 
 def main_loop():
@@ -22,10 +22,10 @@ def main_loop():
         if "take photo" in command:
             speak("Taking screenshot now.")
             img_bytes = take_screenshot()
-            imgs.append(img_bytes)
+            imgs.append(encode_bytes(img_bytes))
             speak(f"Saved screenshot in memory.")
 
-        elif "solve location" in command:
+        elif "location" in command:
             if not imgs:
                 speak("No screenshots to analyze.")
                 continue
