@@ -64,14 +64,15 @@ def call_location_api(image_bytes):
         return None
 
 def main_loop():
-    speak("Hello! I’m ready for your command.")
+    speak("Go go go go go go.")
     while True:
         command = listen_for_command()
 
         if "take photo" in command:
             speak("Taking screenshot now.")
             img_bytes = take_screenshot()
-            
+            speak(f"Saved screenshot in memory.")
+
             # Send to location identification service
             result = call_location_api(img_bytes)
             
