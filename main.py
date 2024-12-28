@@ -1,32 +1,21 @@
+# system imports
 import os
 from dotenv import load_dotenv
 
-import pyautogui
+# 3rd party imports
 import requests
-import io
-import base64
 from openai import OpenAI
 import webbrowser
 
+# local imports
 from voice import speak, listen_for_command
 from solution_map import create_map
+from image import encode_image, take_screenshot
 
 # Load the .env file
 load_dotenv()
 
 client = OpenAI()
-
-def encode_image(image_path):
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
-
-def take_screenshot():
-    """Capture the screenshot and return bytes."""
-    screenshot = pyautogui.screenshot()
-    img_bytes = io.BytesIO()
-    screenshot.save(img_bytes, format='PNG')
-    img_bytes.seek(0)
-    return img_bytes
 
 def call_location_api(imgs):
     # Getting the base64 string
