@@ -7,7 +7,7 @@ def encode_image(image_path):
         return base64.b64encode(image_file.read()).decode("utf-8")
 
 def encode_bytes(image_bytes):
-    return base64.b64encode(image_bytes).decode("utf-8")
+    return base64.b64encode(image_bytes.getvalue()).decode("utf-8")
 
 def take_screenshot():
     """Capture the screenshot and return bytes."""
