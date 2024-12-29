@@ -2,8 +2,8 @@ from ai import AIClient
 from image import encode_image
 
 imgs = [
-    encode_image("photo1.png"),
-    encode_image("photo2.png"),
+    encode_image("photo1.jpg"),
+    encode_image("photo2.jpg"),
 ]
 
 ai = AIClient()

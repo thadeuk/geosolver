@@ -1,5 +1,6 @@
 from openai import OpenAI
 from dotenv import load_dotenv
+from image import encode_image
 
 class AIClient:
     def __init__(self, model_name="gpt-4o-mini"):
@@ -37,3 +38,13 @@ class AIClient:
         if response.choices[0]:
             return response.choices[0].message.content
         return None
+
+if __name__ == "__main__":
+    imgs = [
+        encode_image("photo1.jpg"),
+        encode_image("photo2.jpg"),
+    ]
+
+    ai = AIClient()
+    result = ai.call_location_api(imgs)
+    print(result)
