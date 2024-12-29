@@ -31,7 +31,7 @@ def reduce_image_size(
 def encode_bytes(image_bytes):
     return base64.b64encode(image_bytes.getvalue()).decode("utf-8")
 
-def take_screenshot(quality=50):
+def take_screenshot(quality=30):
     screenshot = pyautogui.screenshot()
     
     # Convert screenshot to RGB (in case it's RGBA)
