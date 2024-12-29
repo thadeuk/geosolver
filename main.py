@@ -1,6 +1,4 @@
 # system imports
-import os
-from dotenv import load_dotenv
 import re
 import json
 
@@ -8,11 +6,12 @@ import json
 import webbrowser
 
 # local imports
+from ai import AIClient
 from voice import speak, listen_for_command
 from solution_map import create_map
-from image import encode_image, take_screenshot, encode_bytes
-from ai import call_location_api
+from image import take_screenshot, encode_bytes
 
+aiClient = AIClient()
 def main_loop():
     imgs = []
     while True:
@@ -22,10 +21,10 @@ def main_loop():
             continue
 
         if "take photo" in command:
-            speak("Taking screenshot now.")
+            speak("Taking photo")
             img_bytes = take_screenshot()
             imgs.append(encode_bytes(img_bytes))
-            speak(f"Saved screenshot in memory.")
+            speak(f"Saved photo")
 
         elif "location" in command:
             if not imgs:
@@ -34,7 +33,7 @@ def main_loop():
 
             speak(f"Sending {len(imgs)} images to ChatGPT.")
             # Send to location identification service
-            result = call_location_api(imgs)
+            result = aiClient.call_location_api(imgs)
             print(result)
             if result:
                 location_str, lat, lon = parse_location_data(extract_json_from_markdown(result))
