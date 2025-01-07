@@ -25,4 +25,3 @@ def listen_for_command():
         except sr.RequestError:
             print("API was unavailable or unresponsive.")
             return (2, "")
-    return (0, "")

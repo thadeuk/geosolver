@@ -10,13 +10,9 @@ from ai import AIClient
 from voice import speak, listen_for_command
 from solution_map import create_map
 from image import take_screenshot, encode_bytes
-import vlc
+from audio import play_sound
 
 aiClient = AIClient()
-
-def play_sound(file_path):
-    player = vlc.MediaPlayer(file_path)
-    player.play()
 
 def main_loop():
     imgs = []
