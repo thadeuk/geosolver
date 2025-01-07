@@ -1,8 +1,9 @@
 # geosolver
-Geoguessr assistant to solve rounds based on voice commands.
+Geoguessr assistant to get GPT location guess with voice commands.
 
 ## How to install
 
+python -m venv venv
 source venv/bin/activate
 pip -r requirements.txt
 
@@ -12,7 +13,7 @@ Export or create a `.env` file with the following content:
 OPEN_API_KEY=your_api_key
 ```
 
-$ python main.py 2> /dev/null
+python main.py 2> /dev/null
 
 ## How it works
 
